@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+      body {
+        font-weight: 200;
+        font-family: 'Montserrat', sans-serif;
+        padding: 20px;
+      }
+      .thumbImage {
+        width: 200px;
+        height: auto;
+      }
+      .btn {
+        border-radius: 0;
+      }
+      .fileButton {
+        border: none;
+        padding: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+        <h4>Landmark Solutions | Image Classification Demo 2</h4>
+        <div class="row">
+          <div class="col-md-6">
+             <input id="file_upload" type="file" name="pic" class="fileButton" accept="image/*" multiple=true>
+          </div>
+          <div class="col-md-6">
+            <button onclick="processFiles()" class=" btn btn-success float-right">Go!</button>
+            <button onclick="clearAll()" class="btn btn-info float-right">Clear Results</button>
+          </div>
+        </div>
+        <table id="results" class="table table-sm">
+        <thead class="thead-inverse">
+          <tr>
+            <th class="thumbCol">Preview</th>
+            <th>File Name</th>
+            <th>PUMP</th>
+            <th>ESS</th>
+            <th>GASGOV</th>
+            <th>GDS</th>
+            <th>EDS</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  <script>
+
+  function clearAll(){
+    $('#results').find("tr:gt(0)").remove();
+  }
+
+  function removeRow(e){
+    $(e.target).closest('tr').remove()
+  }
+
+
+  function cleanNumber(num){
+    return (num * 100).toFixed(2)
+  }
+
+
+
+  function appendCellWithTag(tag, response) {
+      var html = null;
+      $.each(response, function( index, value ) {
+        if(value['Tag'] === tag) {
+          html = '<td style="background-color:rgba(0,255,0,' + value.Probability + ')">' + cleanNumber(value.Probability) + '%</td>';
+        }
+      });
+      return html;
+  }
+
+
+
+  function addRow(response, file){
+      var reader  = new FileReader();
+      var rowString = null
+      reader.readAsDataURL(file);
+      reader.addEventListener("load", function () {
+        rowString = "<tr><td class='thumb'><img class='thumbImage' src='" + reader.result + "'></td><td>" + file.name + "</td>";
+        rowString += appendCellWithTag("PUMP", response);
+        rowString += appendCellWithTag("ESS", response);
+        rowString += appendCellWithTag("GASGOV", response);
+        rowString += appendCellWithTag("GDS", response);
+        rowString += appendCellWithTag("EDS", response);
+        $('#results > tbody:last-child').append(rowString + '<td><button class=\'btn btn-danger\' onclick="removeRow(event)">Remove</button></td></tr>')
+      }, false);
+  }
+
+  function processFiles(){
+    var files = $('#file_upload').get(0).files;
+    $.each(files, function(i, file){
+      handleFileUpload(file)
+    })
+  }
+
+  function handleFileUpload(file) {
+       //var url = "https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/fbccd841-45cc-46e5-a104-d415907dac84/image?iterationId=b00bb75c-ad61-4bd8-8351-e864839a051d";
+        var url = "https://southcentralus.api.cognitive.microsoft.com/customvision/v1.1/Prediction/2b6da450-5e03-4341-8a9a-b605067d200b/image?iterationId=d8cef566-34e7-44cd-ab62-9d3f5a33b649"
+       $.ajax({
+          url: url,
+          type: "post",
+          data: file,
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Prediction-Key': '64224c0aa9d64062951beb155ecfc968'
+          },
+          processData: false,
+          success: function(data){
+            console.log(data)
+            console.log("OK")
+            addRow(data.Predictions, file)
+          },
+          error:function(error){
+            console.log("ERROR")
+            console.log(error)
+          }
+      });
+    }
+
+  </script>
+
+  </body>
+</html>
