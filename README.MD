@@ -15,7 +15,8 @@
 - Open the `index.html` file in your browser. (or use https://lighackathon.blob.core.windows.net/azure-customvision/index.html)
 - This is a GUI to send image files to the Azure Custom Vision Service endpoint 
 ### Your Turn! - What's that flower?
-- Download some sample images M:\Temporary Sharing Area\Hackathon\Dunbar\customvision-flowers.zip (218MB)
+- Download some same images from the Hackathon Team Site https://bit.ly/2KE4iNR
+- Or grab them from the M drive - M:\Temporary Sharing Area\Hackathon\Dunbar\customvision-flowers.zip (218MB)
 - Within the ZIP files are images of 4 species of flower
     - Daisy (633 images)
     - Dandelion (898 images)
